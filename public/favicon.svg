@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="Quách Hưng">
+  <defs>
+    <linearGradient id="f-metal" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#7ad7ff"/>
+      <stop offset=".52" stop-color="#bcd6ff"/>
+      <stop offset="1" stop-color="#a99bff"/>
+    </linearGradient>
+    <radialGradient id="f-glow" cx=".28" cy=".2" r=".92">
+      <stop offset="0" stop-color="#7ad7ff" stop-opacity=".30"/>
+      <stop offset=".55" stop-color="#a99bff" stop-opacity=".10"/>
+      <stop offset="1" stop-color="#7ad7ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="32" height="32" rx="7.5" fill="#06070a"/>
+  <rect width="32" height="32" rx="7.5" fill="url(#f-glow)"/>
+  <g transform="translate(-0.56 -0.56) scale(1.38)" fill="none" stroke-linecap="round">
+    <path d="M5 19 19 5M9.5 19 19 9.5" stroke="#a99bff" stroke-opacity=".34" stroke-width="2.5" transform="translate(.5 1)"/>
+    <path d="M5 19 19 5M9.5 19 19 9.5" stroke="url(#f-metal)" stroke-width="2.5"/>
+    <circle cx="5" cy="19" r="1.75" fill="#dff1ff" stroke="none"/>
+  </g>
+  <rect x=".5" y=".5" width="31" height="31" rx="7" fill="none" stroke="#ffffff" stroke-opacity=".10"/>
+</svg>

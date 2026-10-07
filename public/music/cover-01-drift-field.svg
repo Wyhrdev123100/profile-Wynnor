@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="320" height="320" role="img" aria-label="Drift Field">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="72%">
+      <stop offset="0%" stop-color="#123243"/>
+      <stop offset="55%" stop-color="#0a1119"/>
+      <stop offset="100%" stop-color="#05070a"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7ad7ff"/>
+      <stop offset="100%" stop-color="#a99bff" stop-opacity="0.2"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.16"/>
+      <stop offset="45%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="320" fill="url(#bg)"/>
+  <g stroke="#ffffff" stroke-opacity="0.09" fill="none">
+    <circle cx="160" cy="160" r="52"/>
+    <circle cx="160" cy="160" r="96"/>
+    <circle cx="160" cy="160" r="136" stroke-dasharray="1 8" stroke-linecap="round"/>
+  </g>
+  <circle cx="160" cy="160" r="52" fill="url(#ring)" opacity="0.18"/>
+  <circle cx="160" cy="160" r="52" fill="none" stroke="url(#ring)" stroke-width="1.25"/>
+  <circle cx="160" cy="64" r="3.5" fill="#7ad7ff"/>
+  <circle cx="256" cy="160" r="2.5" fill="#a99bff"/>
+  <circle cx="104" cy="248" r="2" fill="#6ee7b7"/>
+  <g fill="#ffffff" opacity="0.55">
+    <circle cx="44" cy="52" r="1.4"/>
+    <circle cx="276" cy="72" r="1"/>
+    <circle cx="60" cy="248" r="1.1"/>
+    <circle cx="248" cy="272" r="1.5"/>
+    <circle cx="132" cy="26" r="1"/>
+  </g>
+  <rect width="320" height="320" fill="url(#sheen)"/>
+</svg>

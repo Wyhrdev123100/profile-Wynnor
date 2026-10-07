@@ -1,0 +1,2555 @@
+@import "tailwindcss";
+
+/* ==================================================================
+   OBSIDIAN / IRIS — design language
+   ---------------------------------------------------------------
+   Một hệ màu lạnh, chính xác, lấy cảm hứng từ HUD buồng lái và
+   giao diện kỹ thuật: nền mực gần-đen, một gradient chữ ký
+   ice → iris (hai màu cùng độ sáng nên nhìn như MỘT màu, không
+   bao giờ thành cầu vồng), và ember chỉ dùng làm dấu chấm câu.
+   ================================================================== */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Biến góc của logo phải "đăng ký" thì transition mới bám theo —
+   nếu không, transform sẽ nhảy giật mỗi lần con trỏ di chuyển.
+   `inherits: true` vì con trỏ ghi giá trị lên lớp ngoài cùng
+   (.logo3d) còn .logo3d__stage đọc lại ở lớp con. */
+@property --logo-rx {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+@property --logo-ry {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+@property --logo-scale {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* --- Surfaces ------------------------------------------------- */
+  --bg: #06070a;
+  --bg-2: #0a0c12;
+  --surface: #0c0e14;
+  --surface-glass: rgba(10, 12, 18, 0.72);
+  --surface-2: rgba(255, 255, 255, 0.035);
+  --surface-3: rgba(255, 255, 255, 0.06);
+
+  /* --- Lines ---------------------------------------------------- */
+  --line: rgba(255, 255, 255, 0.075);
+  --line-2: rgba(255, 255, 255, 0.13);
+  --line-3: rgba(255, 255, 255, 0.22);
+
+  /* --- Ink ------------------------------------------------------ */
+  --fg: #eef1f7;
+  --fg-2: #c3cad8;
+  --muted: #8b93a5;
+  --muted-2: #666e80;
+
+  /* --- Signature accents ---------------------------------------- */
+  --ice: #7ad7ff;
+  --iris: #a99bff;
+  --ember: #ff8a5b;
+  --mint: #6ee7b7;
+
+  --acc: var(--ice);
+  --acc-2: var(--iris);
+  --acc-ink: #04131c;
+
+  --acc-soft: rgba(122, 215, 255, 0.1);
+  --acc-line: rgba(122, 215, 255, 0.28);
+  --acc-glow: rgba(122, 215, 255, 0.16);
+
+  /* --- Effects --------------------------------------------------- */
+  --grid: rgba(255, 255, 255, 0.045);
+  --glare: rgba(255, 255, 255, 0.1);
+  --grain-opacity: 0.035;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.28);
+  --shadow-2: 0 2px 4px rgba(0, 0, 0, 0.35), 0 18px 50px -12px rgba(0, 0, 0, 0.6);
+  --shadow-3: 0 4px 10px rgba(0, 0, 0, 0.45), 0 40px 100px -20px rgba(0, 0, 0, 0.75);
+
+  /* --- Brand: avatar + logo -------------------------------------- */
+  /* Toàn bộ tham số của lớp thương hiệu nằm ở đây để chỉnh
+     độ sâu, độ chậm và cường độ ánh sáng từ một chỗ. */
+  --avatar-glow: 0.44;
+  --avatar-ring-dur: 18s;
+  --avatar-breathe-dur: 9s;
+  --avatar-sheen-dur: 11s;
+  --logo-lift: 1.04;
+  --logo-tilt-x: 10deg;
+  --logo-tilt-y: 16deg;
+  --logo-parallax: 0.006;
+  --sheen-dur: 900ms;
+
+  /* --- Motion ---------------------------------------------------- */
+  --e-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --e-io: cubic-bezier(0.65, 0, 0.35, 1);
+  --e-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  --t-fast: 140ms;
+  --t-base: 260ms;
+  --t-slow: 520ms;
+  --t-reveal: 900ms;
+
+  /* --- Layout ---------------------------------------------------- */
+  --gutter: 1.25rem;
+  --maxw: 84rem;
+  --nav-h: 4.5rem;
+
+  /* --- Âm thanh -------------------------------------------------- */
+  /* Bus (components/music/audio-bus) ghi đè 4 biến này ~20Hz khi phát.
+     Giá trị 0 = im lặng → mọi thứ dùng chúng chạy đúng như tĩnh. */
+  --audio-level: 0;
+  --audio-bass: 0;
+  --audio-treble: 0;
+  --audio-energy: 0;
+
+  /* Vị trí con trỏ (px) — dùng cho ánh sáng bám và parallax 0-JS */
+  --mx: 50vw;
+  --my: 30vh;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+/* Sáng: cùng một ngôn ngữ, hạ chroma & tăng contrast chữ */
+:root:not(.dark) {
+  color-scheme: light;
+
+  --bg: #f7f8fa;
+  --bg-2: #eef0f4;
+  --surface: #ffffff;
+  --surface-glass: rgba(255, 255, 255, 0.76);
+  --surface-2: rgba(10, 14, 24, 0.028);
+  --surface-3: rgba(10, 14, 24, 0.055);
+
+  --line: rgba(10, 14, 24, 0.09);
+  --line-2: rgba(10, 14, 24, 0.16);
+  --line-3: rgba(10, 14, 24, 0.28);
+
+  --fg: #0a0d14;
+  --fg-2: #2b3242;
+  --muted: #5c6577;
+  --muted-2: #838c9d;
+
+  --ice: #0d84c4;
+  --iris: #5d4fd4;
+  --ember: #d1552a;
+  --mint: #0f9e74;
+  --acc-ink: #ffffff;
+
+  --acc-soft: rgba(13, 132, 196, 0.08);
+  --acc-line: rgba(13, 132, 196, 0.24);
+  --acc-glow: rgba(13, 132, 196, 0.1);
+
+  --grid: rgba(10, 14, 24, 0.045);
+  --glare: rgba(10, 14, 24, 0.06);
+  --grain-opacity: 0.022;
+
+  /* nền sáng dễ chịu hơn nền mực: halo bớt nồng để không tranh chỗ
+     với chữ, nhưng vẫn giữ cùng một ngôn ngữ ánh sáng */
+  --avatar-glow: 0.26;
+
+  --shadow-1: 0 1px 2px rgba(16, 24, 40, 0.05), 0 4px 14px rgba(16, 24, 40, 0.05);
+  --shadow-2: 0 2px 4px rgba(16, 24, 40, 0.06), 0 18px 46px -14px rgba(16, 24, 40, 0.16);
+  --shadow-3: 0 4px 10px rgba(16, 24, 40, 0.07), 0 40px 90px -24px rgba(16, 24, 40, 0.22);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
+  --color-surface: var(--surface);
+  --color-glass: var(--surface-glass);
+  --color-s2: var(--surface-2);
+  --color-s3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-line-3: var(--line-3);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+
+  --color-ice: var(--ice);
+  --color-iris: var(--iris);
+  --color-ember: var(--ember);
+  --color-mint: var(--mint);
+  --color-acc: var(--acc);
+  --color-acc-2: var(--acc-2);
+  --color-acc-ink: var(--acc-ink);
+  --color-acc-soft: var(--acc-soft);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: var(--font-instrument), var(--font-geist-sans), ui-serif, Georgia, serif;
+
+  --shadow-1: var(--shadow-1);
+  --shadow-2: var(--shadow-2);
+  --shadow-3: var(--shadow-3);
+
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-2xl: 36px;
+}
+
+/* ==================================================================
+   BASE
+   ================================================================== */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--line);
+    min-width: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--nav-h) + 2rem);
+    -webkit-text-size-adjust: 100%;
+    /* đừng bao giờ để tràn ngang */
+    overflow-x: clip;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+    text-rendering: optimizeLegibility;
+    transition: background-color 0.4s var(--e-out), color 0.4s var(--e-out);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+    font-weight: 500;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--ice) 30%, transparent);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ice);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Số liệu luôn cùng bề rộng chữ số */
+  .tnum,
+  [class*="tabular"] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    display: block;
+    max-width: 100%;
+  }
+}
+
+/* ==================================================================
+   LAYOUT PRIMITIVES
+   ================================================================== */
+@utility shell {
+  width: 100%;
+  margin-inline: auto;
+  max-width: var(--maxw);
+  padding-inline: var(--gutter);
+  /* trải rộng hơn một chút ở màn rộng */
+  @media (min-width: 1600px) {
+    padding-inline: 2rem;
+  }
+}
+
+@utility shell-wide {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 104rem;
+  padding-inline: var(--gutter);
+}
+
+@utility rail {
+  /* nhịp dọc 8px — dùng cho mọi khoảng cách dọc */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Section: skip render work cho nội dung ngoài màn hình */
+@utility band {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
+}
+
+/* ==================================================================
+   SURFACES
+   ================================================================== */
+
+/* Panel kính: blur + viền 1px + highlight trên cạnh trên */
+@utility glass {
+  background: color-mix(in oklab, var(--surface-glass) 100%, transparent);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--line);
+}
+
+@utility panel {
+  position: relative;
+  background: color-mix(in oklab, var(--surface) 70%, transparent);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+/* Viền sáng 1px chạy theo góc chuột — chữ ký của hệ thiết kế */
+@utility iridescent {
+  position: relative;
+  isolation: isolate;
+}
+@utility iridescent-edge {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    var(--ice),
+    var(--iris) 38%,
+    transparent 58%,
+    transparent 74%,
+    color-mix(in oklab, var(--iris) 60%, transparent)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--t-base) var(--e-out);
+  pointer-events: none;
+  z-index: 2;
+}
+@utility iridescent-on {
+  &:hover > .iridescent-edge,
+  &:focus-within > .iridescent-edge,
+  &[data-active="true"] > .iridescent-edge {
+    opacity: 1;
+  }
+}
+
+/* ==================================================================
+   TYPE
+   ================================================================== */
+
+/* Nhãn kỹ thuật: mono, nhỏ, tracking rộng, chữ thường hoa */
+@utility label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+@utility label-accent {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ice);
+}
+
+/* Nét dưới kẹp giữa hai chữ — dùng cho chữ nghiêng nhấn */
+@utility italic-serif {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+@utility display-xl {
+  font-size: clamp(2.6rem, 8.2vw, 6.25rem);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  font-weight: 500;
+}
+
+@utility display-l {
+  font-size: clamp(2rem, 5.2vw, 3.9rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-weight: 500;
+}
+
+@utility display-m {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+}
+
+@utility body-lg {
+  font-size: clamp(1rem, 1.35vw, 1.1875rem);
+  line-height: 1.62;
+}
+
+@utility body-md {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+@utility body-sm {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+/* Gradient chữ ký: hai màu cùng sáng → nhìn như một màu sáng */
+@utility ink-iris {
+  background-image: linear-gradient(
+    104deg,
+    var(--fg) 0%,
+    var(--fg) 34%,
+    var(--ice) 56%,
+    var(--iris) 74%,
+    var(--fg) 100%
+  );
+  background-size: 240% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Bản thuần màu (không gradient) — dùng khi gradient sẽ làm mờ chữ */
+@utility ink-ice {
+  color: var(--ice);
+}
+
+/* ==================================================================
+   MOTION
+   ================================================================== */
+@keyframes iris-sweep {
+  0% {
+    background-position: 210% 0;
+  }
+  100% {
+    background-position: -60% 0;
+  }
+}
+
+@utility animate-iris {
+  animation: iris-sweep 9s var(--e-io) infinite;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.75rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@utility animate-rise {
+  animation: rise var(--t-slow) var(--e-out) both;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@utility animate-fade {
+  animation: fade var(--t-base) var(--e-out) both;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+@utility animate-beacon {
+  animation: pulse-dot 2.4s var(--e-io) infinite;
+}
+
+@keyframes drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, -4%, 0) scale(1.08);
+  }
+}
+@utility animate-drift-a {
+  animation: drift-a 24s var(--e-io) infinite;
+}
+
+@keyframes drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.06);
+  }
+  50% {
+    transform: translate3d(-4%, 3%, 0) scale(1);
+  }
+}
+@utility animate-drift-b {
+  animation: drift-b 31s var(--e-io) infinite;
+}
+
+/* Vòng quét chạy quanh node trung tâm của Atlas */
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@utility animate-spin-slow {
+  animation: spin-slow 34s linear infinite;
+}
+@utility animate-spin-slower {
+  animation: spin-slow 58s linear infinite reverse;
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+@utility animate-caret {
+  animation: blink 1.1s steps(1) infinite;
+}
+
+@keyframes marquee-x {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@utility animate-marquee {
+  animation: marquee-x 46s linear infinite;
+}
+
+@keyframes shimmer-line {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+@utility animate-shimmer-line {
+  animation: shimmer-line 2.2s var(--e-io) infinite;
+}
+
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+@utility animate-bar {
+  transform-origin: left;
+  animation: bar-grow 1.1s var(--e-out) both;
+}
+
+/* Vẽ dần một cung (dùng pathLength=100 + stroke-dasharray) */
+@keyframes draw-arc {
+  from {
+    stroke-dasharray: 0 100;
+  }
+}
+@utility animate-draw-arc {
+  animation: draw-arc 1.4s var(--e-out) both;
+}
+
+/* ==================================================================
+   SCROLL REVEAL
+   ---------------------------------------------------------------
+   Gating bằng class `js` trên <html> (set bằng inline script trước
+   khi paint) → nếu JS lỗi/chặn, nội dung vẫn hiện bình thường.
+   Hero KHÔNG dùng cơ chế này (dùng animation CSS thuần để LCP
+   được ghi nhận ngay ở frame đầu).
+   ================================================================== */
+.js [data-reveal] {
+  opacity: 0;
+  transition:
+    opacity var(--t-reveal) var(--e-out) var(--rd, 0ms),
+    transform var(--t-reveal) var(--e-out) var(--rd, 0ms),
+    filter var(--t-reveal) var(--e-out) var(--rd, 0ms);
+}
+
+.js [data-reveal]:not([data-shown="true"]) {
+  will-change: opacity, transform;
+}
+
+.js [data-reveal="up"] {
+  transform: translate3d(0, var(--ry, 1.75rem), 0);
+}
+.js [data-reveal="left"] {
+  transform: translate3d(calc(var(--rx, 1.5rem) * -1), 0, 0);
+}
+.js [data-reveal="right"] {
+  transform: translate3d(var(--rx, 1.5rem), 0, 0);
+}
+.js [data-reveal="scale"] {
+  transform: scale(var(--rs, 0.965));
+}
+/* Reveal dạng màn che: dùng mask, KHÔNG dùng clip-path.
+   Lý do: IntersectionObserver của Chrome có tính cả clip-path của chính
+   phần tử — một phần tử đang bị clip 100% sẽ báo isIntersecting = false
+   và không bao giờ hiện được. mask thì IO không quan tâm. */
+.js [data-reveal="clip"] {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0 0);
+  mask-image: linear-gradient(to bottom, #000 0 0);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 0%;
+  mask-size: 100% 0%;
+  transition:
+    opacity var(--t-reveal) var(--e-out) var(--rd, 0ms),
+    transform var(--t-reveal) var(--e-out) var(--rd, 0ms),
+    filter var(--t-reveal) var(--e-out) var(--rd, 0ms),
+    -webkit-mask-size var(--t-reveal) var(--e-out) var(--rd, 0ms),
+    mask-size var(--t-reveal) var(--e-out) var(--rd, 0ms);
+}
+.js [data-reveal="clip-x"] {
+  -webkit-mask-image: linear-gradient(to right, #000 0 0);
+  mask-image: linear-gradient(to right, #000 0 0);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 0% 100%;
+  mask-size: 0% 100%;
+  transition:
+    opacity var(--t-reveal) var(--e-out) var(--rd, 0ms),
+    transform var(--t-reveal) var(--e-out) var(--rd, 0ms),
+    filter var(--t-reveal) var(--e-out) var(--rd, 0ms),
+    -webkit-mask-size var(--t-reveal) var(--e-out) var(--rd, 0ms),
+    mask-size var(--t-reveal) var(--e-out) var(--rd, 0ms);
+}
+
+.js [data-blur] {
+  filter: blur(10px);
+}
+
+.js [data-reveal][data-shown="true"] {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* ------------------------------------------------------------------
+   TEXT REVEAL — che bằng mask rồi trượt lên, mỗi từ lệch nhịp
+   ------------------------------------------------------------------ */
+.word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  /* chừa chỗ cho descender + dấu tiếng Việt */
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+}
+
+.word > i {
+  display: inline-block;
+  font-style: inherit;
+  transform: translate3d(0, 110%, 0);
+  transition:
+    transform var(--t-reveal) var(--e-out) var(--d, 0ms),
+    opacity var(--t-base) linear var(--d, 0ms);
+  opacity: 0;
+}
+
+/* Phiên bản chạy ngay khi paint (hero) — không cần JS → LCP-friendly */
+.js .enter > i {
+  transform: none;
+  opacity: 1;
+  animation: word-rise var(--t-reveal) var(--e-out) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes word-rise {
+  from {
+    transform: translate3d(0, 110%, 0);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Trạng thái chờ của bản inview */
+.js [data-shown="true"] .word > i,
+.js [data-word-shown="true"] .word > i {
+  transform: none;
+  opacity: 1;
+}
+
+/* ==================================================================
+   BRAND — avatar động + logo 3D
+   ---------------------------------------------------------------
+   Cùng một ngôn ngữ với phần còn lại của trang: kính, viền 1px, ánh
+   sáng mềm, mọi chuyển động chỉ dùng transform/opacity.
+   Thứ tự lớp:  halo → vành quay → khung kính → ảnh → lớp kính →
+                  nhãn HUD → chấm trạng thái.
+   ================================================================== */
+
+/* --- AVATAR ----------------------------------------------------- */
+.avatar {
+  position: relative;
+  display: block;
+  inline-size: 100%;
+  aspect-ratio: 1;
+  /* đơn vị cqi trong nhánh này luôn tính theo bề rộng của chính avatar,
+     nên mọi chi tiết bên trong tự co theo — không bao giờ tràn ở 320px */
+  container-type: inline-size;
+  isolation: isolate;
+}
+
+.avatar__halo {
+  position: absolute;
+  inset: -22%;
+  z-index: 0;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle at 44% 36%,
+    color-mix(
+      in oklab,
+      var(--ice) calc((var(--avatar-glow) + var(--audio-level) * 0.34) * 100%),
+      transparent
+    ),
+    transparent 64%
+  );
+  filter: blur(7cqi);
+  opacity: 0.85;
+  animation: avatar-breathe var(--avatar-breathe-dur) var(--e-io) infinite;
+}
+
+.avatar__orbit {
+  position: absolute;
+  inset: -9cqi;
+  z-index: 1;
+  padding: 1.4cqi;
+  border-radius: 999px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    color-mix(in oklab, var(--ice) 78%, transparent) 46deg,
+    transparent 128deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: spin-slow var(--avatar-ring-dur) linear infinite;
+  pointer-events: none;
+}
+
+/* vành kính thứ hai, đứng yên — tạo cảm giác "hai lớp kính" */
+.avatar__track {
+  position: absolute;
+  inset: -4.5cqi;
+  z-index: 1;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  pointer-events: none;
+}
+
+.avatar__frame {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--fg) 10%, transparent),
+    0 14px 38px -14px rgba(0, 0, 0, 0.78),
+    0 0 calc(14cqi + var(--audio-level) * 10cqi) -3cqi
+      color-mix(in oklab, var(--ice) calc((var(--avatar-glow) + var(--audio-level) * 0.4) * 70%), transparent);
+}
+
+.avatar__frame img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: center;
+  /* Thu phóng 1.2×: nhân vật nằm giữa khung và còn ~27% lề mỗi cạnh
+     nên không frame nào bị cắt; ảnh vẫn được thu nhỏ khi hiển thị. */
+  transform: scale(1.2);
+}
+
+/* lớp kính: highlight ở cạnh trên + phản chiếu rất nhẹ ở cạnh dưới */
+.avatar__glass {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(
+    158deg,
+    color-mix(in oklab, #fff 22%, transparent) 0%,
+    transparent 34%,
+    transparent 66%,
+    color-mix(in oklab, var(--ice) 10%, transparent) 100%
+  );
+  box-shadow: inset 0 1px 0 color-mix(in oklab, #fff 26%, transparent);
+  pointer-events: none;
+}
+
+/* reflection chạy qua, một lần rất chậm */
+.avatar__sheen {
+  position: absolute;
+  inset: -30%;
+  background: linear-gradient(
+    72deg,
+    transparent 40%,
+    color-mix(in oklab, #fff 30%, transparent) 50%,
+    transparent 60%
+  );
+  transform: translate3d(-130%, 0, 0);
+  animation: avatar-sheen var(--avatar-sheen-dur) var(--e-io) infinite;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* nhãn HUD — dùng chữ kỹ thuật, co theo avatar nên không bao giờ tràn.
+   Đặt sát đáy và chấm trạng thái đẩy lên góc trên để hai thứ không
+   chồng lên nhau trên màn hình nhỏ. */
+.avatar__hud {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 11%;
+  background: linear-gradient(to top, rgb(4 5 8 / 0.86) 6%, rgb(4 5 8 / 0) 26%);
+  font-family: var(--font-mono);
+  font-size: 7.2cqi;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  color: color-mix(in oklab, var(--muted) 92%, transparent);
+  pointer-events: none;
+}
+
+.avatar__status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  inline-size: 21%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--surface) 82%, transparent);
+  backdrop-filter: blur(8px) saturate(150%);
+  -webkit-backdrop-filter: blur(8px) saturate(150%);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--fg) 12%, transparent),
+    0 4px 12px -4px rgba(0, 0, 0, 0.7);
+}
+
+.avatar__status::before {
+  content: "";
+  inline-size: 34%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: var(--mint);
+  box-shadow: 0 0 6px color-mix(in oklab, var(--mint) 85%, transparent);
+  animation: beacon-ring 2.8s var(--e-io) infinite;
+}
+
+@keyframes avatar-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.6;
+  }
+}
+
+@keyframes avatar-sheen {
+  0%,
+  72% {
+    transform: translate3d(-130%, 0, 0);
+  }
+  92%,
+  100% {
+    transform: translate3d(130%, 0, 0);
+  }
+}
+
+/* vòng lan toả quanh chấm trạng thái */
+@keyframes beacon-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--mint) 55%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 0.85em transparent;
+  }
+}
+
+/* --- LOGO 3D --------------------------------------------------- */
+/* Kích thước do nơi gọi quyết định (ví dụ size-[18px] trên navbar).
+   Các lớp bên trong đặt tuyệt đối theo inset:0 nên không bao giờ
+   ghi đè kích thước mà class Tailwind đã đặt. */
+.logo3d {
+  position: relative;
+  display: block;
+  perspective: 340px;
+  transform: translate3d(
+    calc((var(--mx) - 50vw) * var(--logo-parallax)),
+    calc((var(--my) - 50vh) * var(--logo-parallax)),
+    0
+  );
+  transition: transform 700ms var(--e-out);
+}
+
+.logo3d__stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transform: rotateX(var(--logo-rx)) rotateY(var(--logo-ry)) scale(var(--logo-scale));
+  transition:
+    --logo-rx 320ms var(--e-out),
+    --logo-ry 320ms var(--e-out),
+    --logo-scale 420ms var(--e-out),
+    transform 420ms var(--e-out);
+}
+
+.logo3d__float {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  animation: logo-float 7.5s var(--e-io) infinite;
+}
+
+@keyframes logo-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -1.5%, 0);
+  }
+}
+
+.logo3d__sheen {
+  position: absolute;
+  inset: -40%;
+  z-index: 3;
+  background: linear-gradient(
+    74deg,
+    transparent 40%,
+    color-mix(in oklab, #fff 80%, var(--ice)) 50%,
+    transparent 60%
+  );
+  transform: translate3d(-120%, 0, 0);
+  opacity: 0;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.logo3d:hover .logo3d__sheen,
+.logo3d:focus-visible .logo3d__sheen {
+  opacity: 0.55;
+  animation: logo-sheen var(--sheen-dur) var(--e-out) 1;
+}
+
+@keyframes logo-sheen {
+  to {
+    transform: translate3d(120%, 0, 0);
+  }
+}
+
+/* ==================================================================
+   MUSIC — player nổi góc trái dưới
+   ---------------------------------------------------------------
+   Toàn bộ điều khiển bằng data-state trên `.music`:
+     data-state="idle"     → một dòng nhỏ, im lặng
+     data-state="compact"  → đang phát, gọn
+     data-state="open"     → panel đầy đủ
+   Không có class/JS nào khác cần can thiệp từ bên ngoài.
+   ================================================================== */
+.music {
+  position: fixed;
+  inset-inline-start: clamp(0.75rem, 2.2vw, 1.25rem);
+  inset-block-end: clamp(0.75rem, 2.2vw, 1.25rem);
+  z-index: 68; /* dưới palette (92) và cursor (99), trên mục lục nổi (70) */
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+  inline-size: min(19rem, calc(100vw - 1.5rem));
+  font-family: var(--font-mono);
+  isolation: isolate;
+}
+
+/* --- panel ------------------------------------------------------- */
+.music__panel {
+  inline-size: min(21rem, calc(100vw - 1.5rem));
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid var(--line-2);
+  border-radius: 1rem;
+  background: var(--surface-glass);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: var(--shadow-3);
+  transform-origin: bottom left;
+  transform: translateY(6px) scale(0.985);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--t-base) var(--e-out),
+    transform var(--t-base) var(--e-out),
+    visibility 0s linear var(--t-base);
+}
+.music[data-state="open"] .music__panel {
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.music__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.music__eyebrow {
+  margin: 0;
+  font-size: 0.625rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+.music__count {
+  margin: 0.15rem 0 0;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  color: var(--ice);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- đĩa + tên bài ---------------------------------------------- */
+.music__now {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.music__disc {
+  position: relative;
+  flex: none;
+  inline-size: 3.5rem;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  overflow: hidden;
+  background: conic-gradient(
+    from 0deg,
+    var(--surface-3) 0deg 8deg,
+    var(--surface) 8deg 180deg,
+    var(--surface-3) 180deg 188deg,
+    var(--surface) 188deg 360deg
+  );
+  box-shadow:
+    inset 0 0 0 1px var(--line-2),
+    0 0 calc(var(--audio-level) * 22px) -2px color-mix(in oklab, var(--ice) 60%, transparent);
+  transition: box-shadow var(--t-base) linear;
+}
+.music__disc img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+.music__disc-hole {
+  position: absolute;
+  inset: 44%;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line-3);
+}
+.music__now-text {
+  min-inline-size: 0;
+}
+.music__track {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.music__artist {
+  margin: 0.1rem 0 0;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* --- seek -------------------------------------------------------- */
+.music__seek {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.music__time {
+  flex: none;
+  min-inline-size: 2.25rem;
+  font-size: 0.625rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted-2);
+}
+.music__time--total {
+  text-align: end;
+}
+
+/* range viết tay: mảnh, kéo theo biến --p (0–1) do bus cập nhật */
+.music__range {
+  --p: 0;
+  flex: 1;
+  min-inline-size: 0;
+  block-size: 1rem;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+.music__range::-webkit-slider-runnable-track {
+  block-size: 2px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--ice) 0 calc(var(--p) * 100%),
+    var(--line-3) calc(var(--p) * 100%) 100%
+  );
+}
+.music__range::-moz-range-track {
+  block-size: 2px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--ice) 0 calc(var(--p) * 100%),
+    var(--line-3) calc(var(--p) * 100%) 100%
+  );
+}
+.music__range::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  margin-block-start: -4px;
+  inline-size: 10px;
+  block-size: 10px;
+  border-radius: 999px;
+  background: var(--fg);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ice) 22%, transparent);
+  transition: box-shadow var(--t-fast) var(--e-out);
+}
+.music__range::-moz-range-thumb {
+  inline-size: 10px;
+  block-size: 10px;
+  border: none;
+  border-radius: 999px;
+  background: var(--fg);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ice) 22%, transparent);
+}
+.music__range:hover::-webkit-slider-thumb,
+.music__range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 5px color-mix(in oklab, var(--ice) 30%, transparent);
+}
+.music__range--vol {
+  flex: none;
+  inline-size: 4.5rem;
+}
+
+/* --- transport --------------------------------------------------- */
+.music__transport {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.music__icon-btn {
+  display: grid;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  border-radius: 0.55rem;
+  color: var(--muted);
+  transition:
+    color var(--t-fast) var(--e-out),
+    background-color var(--t-fast) var(--e-out);
+}
+.music__icon-btn:hover {
+  color: var(--fg);
+  background: var(--surface-2);
+}
+.music__icon-btn:focus-visible {
+  outline: none;
+  color: var(--fg);
+  background: color-mix(in oklab, var(--ice) 12%, transparent);
+}
+.music__play {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border-radius: 999px;
+  color: var(--acc-ink);
+  background: linear-gradient(140deg, var(--ice), var(--iris));
+  box-shadow: 0 0 calc(var(--audio-level) * 18px) -4px color-mix(in oklab, var(--ice) 70%, transparent);
+  transition:
+    transform var(--t-fast) var(--e-spring),
+    box-shadow var(--t-base) linear;
+}
+.music__play:hover {
+  transform: scale(1.05);
+}
+.music__play:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+.music__play[data-busy] {
+  opacity: 0.6;
+}
+.music__vol {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-inline-start: auto;
+}
+
+/* --- playlist ---------------------------------------------------- */
+.music__list {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  max-block-size: 11rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.music__row {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  inline-size: 100%;
+  padding: 0.4rem 0.45rem;
+  border-radius: 0.5rem;
+  text-align: start;
+  transition: background-color var(--t-fast) var(--e-out);
+}
+.music__row:hover {
+  background: var(--surface-2);
+}
+.music__row:focus-visible {
+  outline: 1px solid var(--ice);
+  outline-offset: -1px;
+}
+.music__row[data-active] {
+  background: color-mix(in oklab, var(--ice) 8%, transparent);
+}
+.music__row-idx {
+  font-size: 0.625rem;
+  color: var(--muted-2);
+  font-variant-numeric: tabular-nums;
+}
+.music__row[data-active] .music__row-idx {
+  color: var(--ice);
+}
+.music__row-meta {
+  display: grid;
+  min-inline-size: 0;
+}
+.music__row-title {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--fg-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.music__row[data-active] .music__row-title {
+  color: var(--fg);
+}
+.music__row-note {
+  font-size: 0.625rem;
+  color: var(--muted-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.music__row-dur {
+  font-size: 0.625rem;
+  color: var(--ice);
+}
+
+/* cột cân bằng nhỏ — dùng lại cho cả dock lẫn playlist */
+.music__bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5px;
+  block-size: 0.7rem;
+}
+.music__bars i {
+  inline-size: 2px;
+  block-size: 100%;
+  border-radius: 1px;
+  background: currentColor;
+  transform-origin: bottom;
+  scale: 1 0.3;
+}
+.music__bars[data-live] i,
+.music__row[data-active] .music__bars i {
+  animation: music-eq 0.9s var(--e-io) infinite alternate;
+}
+@keyframes music-eq {
+  from {
+    scale: 1 0.28;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
+/* --- chân panel --------------------------------------------------- */
+.music__foot {
+  display: grid;
+  gap: 0.3rem;
+  padding-top: 0.15rem;
+}
+.music__error {
+  margin: 0;
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  color: var(--muted-2);
+}
+.music__keys {
+  margin: 0;
+  font-size: 0.625rem;
+  color: var(--muted-2);
+}
+.music__keys kbd {
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: 1.1rem;
+  padding: 0.1rem 0.25rem;
+  border: 1px solid var(--line-2);
+  border-radius: 0.3rem;
+  font: inherit;
+  color: var(--muted);
+  background: var(--surface-2);
+}
+
+/* --- dock: dải nhỏ ở chế độ idle / compact ---------------------- */
+.music__dock {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.2rem;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  box-shadow: var(--shadow-2);
+  transition:
+    box-shadow var(--t-base) linear,
+    opacity var(--t-slow) var(--e-out);
+}
+.music[data-playing] .music__dock {
+  box-shadow:
+    var(--shadow-2),
+    0 0 calc(var(--audio-level) * 26px) -6px color-mix(in oklab, var(--iris) 70%, transparent);
+}
+.music__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-inline-size: 0;
+  padding: 0.2rem 0.35rem;
+  border-radius: 999px;
+  color: var(--fg-2);
+  transition: color var(--t-fast) var(--e-out);
+}
+.music__toggle:hover {
+  color: var(--fg);
+}
+.music__toggle:focus-visible {
+  outline: 1px solid var(--ice);
+  outline-offset: 2px;
+}
+.music__dock-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  flex: none;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface-3);
+}
+.music__dock-art img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+.music__dock-art[data-spin] img {
+  animation: spin-slow 7s linear infinite;
+}
+.music__dock-art .music__bars {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: none;
+  justify-content: center;
+  padding-block-end: 0.3rem;
+  block-size: 0.6rem;
+  color: var(--fg);
+}
+.music[data-state="idle"] .music__dock-art .music__bars {
+  display: flex;
+}
+.music[data-state="idle"] .music__dock-art img {
+  opacity: 0.55;
+}
+.music__dock-text {
+  display: grid;
+  min-inline-size: 0;
+  text-align: start;
+}
+.music__dock-title {
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  color: var(--fg-2);
+  line-height: 1.1;
+}
+.music__dock-sub {
+  font-size: 0.5625rem;
+  letter-spacing: 0.08em;
+  color: var(--muted-2);
+  line-height: 1.2;
+  max-inline-size: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.music[data-state="idle"] .music__dock-sub,
+.music[data-state="idle"] .music__dock-chev {
+  display: none;
+}
+.music[data-state="idle"] .music__dock-title {
+  letter-spacing: 0.26em;
+}
+.music[data-state="compact"] .music__dock-title {
+  letter-spacing: 0.04em;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+}
+.music__dock-chev {
+  display: grid;
+  place-items: center;
+  padding-inline: 0.35rem 0.5rem;
+  color: var(--muted-2);
+}
+.music__dock-play {
+  flex: none;
+  inline-size: 2.1rem;
+  block-size: 2.1rem;
+  color: var(--fg-2);
+}
+.music__dock-play:hover {
+  color: var(--fg);
+}
+
+/* Chế độ im lặng (ambient): thu nhỏ dock nhưng KHÔNG hạ dưới 0.4 —
+   vẫn nhìn thấy và bấm được. */
+html[data-ambient="1"] .music__dock {
+  opacity: 0.4;
+}
+html[data-ambient="1"] .music__panel {
+  opacity: 1;
+}
+html[data-ambient="1"] .music:hover .music__dock,
+html[data-ambient="1"] .music:focus-within .music__dock {
+  opacity: 1;
+}
+
+/* ==================================================================
+   UNIVERSE — bản đồ vũ trụ
+   ---------------------------------------------------------------
+   Bố cục: .universe (khung) → .universe__viewport (cắt + camera)
+            → .universe__stage (cả đồ, được transform)
+   Node là <button> HTML đè trên SVG nên focus ring và bàn phím
+   không phải làm lại.
+
+   Thứ tự lớp từ sau ra trước:
+     .universe__nebula   khí
+     .universe__stars    canvas sao
+     .universe__shooting sao băng
+     .universe__noise    hạt phim
+     .universe__stage    vành quỹ đạo → đường nối → node → tooltip
+   ================================================================== */
+.universe {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(120% 100% at 50% 0%, color-mix(in oklab, var(--iris) 7%, transparent), transparent 60%),
+    color-mix(in oklab, var(--surface) 55%, transparent);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* --- các đám mây khí -------------------------------------------- */
+.universe__nebula {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.universe__cloud {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(60px);
+  /* cường độ biến thiên nhẹ theo nhạc đang phát */
+  opacity: calc(0.32 + var(--audio-energy) * 0.22);
+  transition: opacity 500ms linear;
+}
+.universe__cloud--ice {
+  inline-size: 46%;
+  aspect-ratio: 1;
+  inset-block-start: -12%;
+  inset-inline-start: -8%;
+  background: radial-gradient(circle, color-mix(in oklab, var(--ice) 42%, transparent), transparent 68%);
+  animation: nebula-drift 34s var(--e-io) infinite alternate;
+}
+.universe__cloud--iris {
+  inline-size: 52%;
+  aspect-ratio: 1;
+  inset-block-start: 22%;
+  inset-inline-end: -14%;
+  background: radial-gradient(circle, color-mix(in oklab, var(--iris) 40%, transparent), transparent 68%);
+  animation: nebula-drift 46s var(--e-io) infinite alternate-reverse;
+}
+.universe__cloud--ember {
+  inline-size: 30%;
+  aspect-ratio: 1;
+  inset-block-end: -14%;
+  inset-inline-start: 28%;
+  background: radial-gradient(circle, color-mix(in oklab, var(--ember) 26%, transparent), transparent 70%);
+  animation: nebula-drift 58s var(--e-io) infinite alternate;
+}
+.universe__haze {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(90% 70% at 50% 45%, transparent 40%, color-mix(in oklab, var(--bg) 72%, transparent) 100%);
+}
+@keyframes nebula-drift {
+  from {
+    transform: translate3d(-2%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(3%, 2%, 0) scale(1.08);
+  }
+}
+
+/* --- sao băng: hiếm, chạy chéo, không lặp rõ (§32) -------------- */
+.universe__shooting {
+  position: absolute;
+  z-index: 0;
+  inline-size: 34%;
+  block-size: 1px;
+  inset-block-start: var(--sy, 10%);
+  inset-inline-start: var(--sx, 20%);
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--ice) 92%, white));
+  transform: rotate(var(--srot, 28deg));
+  transform-origin: 0 50%;
+  border-radius: 999px;
+  box-shadow: 0 0 6px color-mix(in oklab, var(--ice) 55%, transparent);
+}
+.universe__shooting[data-fire] {
+  animation: shooting var(--sdur, 1.6s) var(--e-out) forwards;
+}
+@keyframes shooting {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+    scale: 0.4 1;
+  }
+  12% {
+    opacity: 1;
+    scale: 1 1;
+  }
+  70% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    translate: 130vw 46vh;
+    scale: 0.7 1;
+  }
+}
+
+/* --- hạt phim: cực mờ, chỉ để nền bớt phẳng (§31) --------------- */
+.universe__noise {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* --- khung nhìn + camera ----------------------------------------- */
+.universe__viewport {
+  position: relative;
+  z-index: 1;
+  inline-size: 100%;
+  touch-action: pan-y;
+}
+.universe[data-zoomable] .universe__viewport {
+  cursor: grab;
+}
+.universe[data-zoomable] .universe__viewport:active {
+  cursor: grabbing;
+}
+.universe__viewport:focus-visible {
+  outline: 1px solid var(--ice);
+  outline-offset: -2px;
+}
+/* Bản xếp dọc được thiết kế cho màn hẹp. Kéo dài nó theo bề rộng của
+   máy tính bảng sẽ ra một cột cao lêu nghêu với node nhỏ lí nhí, nên
+   giới hạn lại rồi canh giữa. */
+.universe[data-stacked] .universe__stage {
+  max-inline-size: 30rem;
+  margin-inline: auto;
+}
+
+.universe__stage {
+  position: relative;
+  inline-size: 100%;
+  transform-origin: 0 0;
+  will-change: transform;
+  /* Hệ số co theo bề rộng khung (đặt từ UniverseMap). Mọi cỡ px bên
+     trong bản đồ nhân với nó, nên tỉ lệ node : khoảng cách luôn giữ
+     nguyên — bản đồ nhỏ lại thì nhỏ lại đều, không bao giờ chồng nhau. */
+  --k: 1;
+}
+
+/* --- node --------------------------------------------------------- */
+/* Bốn lớp: aura → ring → orbit (quay) → orb (quả cầu kính). */
+.universe__node {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  inline-size: var(--size);
+  block-size: var(--size);
+  translate: -50% -50%;
+  z-index: 1;
+  color: var(--fg);
+  transition:
+    opacity 400ms var(--e-out),
+    scale 400ms var(--e-spring);
+}
+.universe__node[data-dim] {
+  opacity: 0.3;
+}
+.universe__node:hover,
+.universe__node:focus-visible {
+  scale: 1.06;
+}
+.universe__node:focus-visible {
+  outline: none;
+}
+.universe__node:focus-visible .universe__node-ring {
+  border-color: var(--fg);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ice) 26%, transparent);
+}
+
+/* quầng sáng — chỉ sáng khi node được chọn, không dùng blur */
+.universe__node-aura {
+  position: absolute;
+  inset: -74%;
+  border-radius: 999px;
+  opacity: 0;
+  filter: blur(14px);
+  transition: opacity 400ms var(--e-out);
+}
+.universe__node[data-active] .universe__node-aura {
+  opacity: calc(0.2 + var(--audio-level) * 0.18);
+}
+
+/* vành mỏng — nở ra khi rê chuột */
+.universe__node-ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  transition:
+    inset 400ms var(--e-out),
+    border-color 300ms var(--e-out),
+    opacity 300ms var(--e-out);
+}
+.universe__node[data-active] .universe__node-ring,
+.universe__node:hover .universe__node-ring {
+  inset: -16%;
+  border-color: var(--tone);
+  opacity: 0.9;
+}
+
+/* cung quay — chỉ chạy khi node đang sống */
+.universe__node-orbit {
+  position: absolute;
+  inset: -16%;
+  border: 1px solid transparent;
+  border-top-color: var(--tone);
+  border-inline-end-color: color-mix(in oklab, var(--tone) 34%, transparent);
+  border-radius: 999px;
+  opacity: 0;
+  transition: opacity 300ms var(--e-out);
+}
+.universe__node[data-active] .universe__node-orbit {
+  opacity: 1;
+  animation: spin-slow 9s linear infinite;
+}
+
+/* quả cầu kính chứa mark */
+.universe__node-orb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background:
+    radial-gradient(120% 120% at 30% 18%, color-mix(in oklab, var(--fg) 9%, transparent), transparent 62%),
+    color-mix(in oklab, var(--surface) 86%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--fg) 9%, transparent),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: box-shadow 400ms var(--e-out);
+}
+.universe__node[data-active] .universe__node-orb {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--tone) 45%, transparent),
+    0 0 calc(10px + var(--audio-level) * 14px) -2px color-mix(in oklab, var(--tone) 55%, transparent);
+}
+/* node nhỏ (công cụ, kỹ năng) dùng hình học riêng: sao chòm thay vì
+   quả cầu — đọc là "vệ tinh" chứ không phải "hành tinh" */
+.universe__node[data-kind="tool"] .universe__node-orb,
+.universe__node[data-kind="skill"] .universe__node-orb {
+  border-radius: 38%;
+  background:
+    radial-gradient(120% 120% at 30% 18%, color-mix(in oklab, var(--tone) 12%, transparent), transparent 64%),
+    color-mix(in oklab, var(--surface) 82%, transparent);
+}
+
+/* lõi dùng chính avatar của hồ sơ — một người, một avatar */
+.universe__node[data-kind="core"] .universe__node-orb {
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.universe__node-avatar {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.universe__node-label {
+  position: absolute;
+  display: grid;
+  gap: 0.1rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.universe__node[data-side="below"] .universe__node-label {
+  inset-block-start: calc(100% + 0.4rem);
+  justify-items: center;
+}
+.universe__node[data-side="right"] .universe__node-label {
+  inset-inline-start: calc(100% + 0.5rem);
+  text-align: start;
+}
+.universe__node[data-side="left"] .universe__node-label {
+  inset-inline-end: calc(100% + 0.5rem);
+  text-align: end;
+  justify-items: end;
+}
+/* nhãn co theo bản đồ nhưng có sàn: nhỏ hơn 10px thì không đọc nổi,
+   thà không có nhãn còn hơn có nhãn mà không ai đọc */
+.universe__node-index {
+  font-family: var(--font-mono);
+  font-size: max(8px, calc(9px * var(--k)));
+  letter-spacing: 0.16em;
+  color: var(--muted-2);
+}
+.universe__node-name {
+  font-size: max(10.5px, calc(12px * var(--k)));
+  letter-spacing: -0.01em;
+  color: var(--fg-2);
+  transition: color 300ms var(--e-out);
+}
+
+/* --- chuỗi thức tỉnh (§67) --------------------------------------- */
+/* Trước khi thức tỉnh node chưa hiện; `--i` là vị trí trong nhịp.
+   Khi reduced-motion thì .universe nhận data-awake ngay nên
+   animation không kịp chạy — nội dung vẫn ở đó. */
+.universe__node {
+  opacity: 0;
+}
+.universe[data-awake] .universe__node {
+  /* `both` là bắt buộc: giữ trạng thái cuối sau khi chạy xong,
+     nếu chỉ `backwards` thì node rơi về opacity: 0 của lớp gốc */
+  animation: node-wake 620ms var(--e-out) both;
+  animation-delay: calc(var(--i) * 70ms);
+}
+.universe[data-awake] .universe__node[data-dim] {
+  /* giữ độ mờ của node không liên quan, chỉ đổi opacity gốc */
+  opacity: 0.3;
+}
+@keyframes node-wake {
+  from {
+    opacity: 0;
+    scale: 0.7;
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+    filter: blur(0);
+  }
+}
+
+/* Người bật giảm chuyển động phải thấy bản đồ ngay, không phụ thuộc
+   animation có chạy tới cuối hay không. Ở chế độ này canvas sao dừng
+   vẽ, trang gần như không sinh frame nữa, nên một animation dài 0.01ms
+   vẫn có thể treo ở trạng thái `from`. Vì vậy hiện node bằng CSS
+   thuần, tắt hẳn animation — không để nội dung phụ thuộc vào
+   chuyển động để tồn tại. */
+@media (prefers-reduced-motion: reduce) {
+  .universe__node,
+  .universe[data-awake] .universe__node {
+    opacity: 1;
+    animation: none !important;
+  }
+  .universe[data-awake] .universe__node[data-dim] {
+    opacity: 0.3;
+  }
+  .universe__shooting {
+    display: none;
+  }
+}
+
+/* --- tooltip (§25) ------------------------------------------------ */
+.universe__tip {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  gap: 0.3rem;
+  inline-size: calc(13.5rem * var(--k));
+  padding: calc(0.6rem * var(--k)) calc(0.7rem * var(--k));
+  border: 1px solid color-mix(in oklab, var(--tone) 26%, var(--line-2));
+  border-radius: 0.75rem;
+  background: var(--surface-glass);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--tone) 10%, transparent),
+    var(--shadow-2);
+  translate: -50% -100%;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 220ms var(--e-out),
+    translate 220ms var(--e-out);
+}
+.universe__tip[data-below] {
+  translate: -50% 0;
+}
+.universe__tip[data-visible] {
+  opacity: 1;
+}
+.universe__tip-head {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.universe__tip-mark {
+  display: grid;
+  place-items: center;
+  inline-size: max(1.2rem, calc(1.5rem * var(--k)));
+  block-size: max(1.2rem, calc(1.5rem * var(--k)));
+  border-radius: 0.4rem;
+  background: color-mix(in oklab, var(--fg) 6%, transparent);
+}
+.universe__tip-dot {
+  inline-size: 8px;
+  block-size: 8px;
+  margin-inline: 0.35rem;
+  border-radius: 999px;
+}
+.universe__tip-name {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: max(11px, calc(12.5px * var(--k)));
+  font-weight: 500;
+  color: var(--fg);
+}
+.universe__tip-kind {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--muted-2);
+}
+.universe__tip-note {
+  font-size: max(10.5px, calc(11.5px * var(--k)));
+  line-height: 1.35;
+  color: var(--muted);
+}
+.universe__tip-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  padding-block-start: 0.35rem;
+  border-block-start: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: max(9px, calc(10px * var(--k)));
+}
+.universe__tip-more,
+.universe__tip-none {
+  color: var(--muted-2);
+}
+.universe__tip-none {
+  font-style: italic;
+}
+
+/* --- HUD (§48): số đếm từ dữ liệu thật --------------------------- */
+.universe__hud {
+  display: grid;
+  gap: 0.4rem;
+  inline-size: 12.5rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-family: var(--font-mono);
+}
+.universe__hud--float {
+  position: absolute;
+  inset-block-start: 0.75rem;
+  inset-inline-start: 0.75rem;
+  z-index: 2;
+  pointer-events: none;
+}
+.universe__hud-title {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--muted-2);
+}
+.universe__hud-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.15rem 0.75rem;
+}
+.universe__hud-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem;
+  font-size: 10px;
+}
+.universe__hud-row dt {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+.universe__hud-row dd {
+  color: var(--fg-2);
+}
+.universe__hud-foot {
+  display: grid;
+  gap: 0.2rem;
+  padding-block-start: 0.35rem;
+  border-block-start: 1px solid var(--line);
+}
+.universe__signal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--muted-2);
+}
+.universe__signal-dot {
+  inline-size: 5px;
+  block-size: 5px;
+  border-radius: 999px;
+  background: var(--muted-2);
+  transition: background-color 300ms var(--e-out);
+}
+.universe__signal[data-live] {
+  color: var(--mint);
+}
+.universe__signal[data-live] .universe__signal-dot {
+  background: var(--mint);
+  box-shadow: 0 0 6px color-mix(in oklab, var(--mint) 70%, transparent);
+}
+
+/* HUD và minimap ẩn trên màn hẹp — chỗ đã chật */
+@media (max-width: 1023px) {
+  .universe__hud--float {
+    display: none;
+  }
+}
+
+/* --- mini map (§49): chỉ hiện khi đang kéo/phóng ------------------ */
+.universe__mini {
+  position: absolute;
+  inset-block-end: 0.75rem;
+  inset-inline-start: 0.75rem;
+  z-index: 2;
+  inline-size: 8.5rem;
+  aspect-ratio: 1520 / 940;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: color-mix(in oklab, var(--surface) 74%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms var(--e-out);
+}
+.universe__mini[data-show] {
+  opacity: 1;
+}
+.universe__mini-dot {
+  position: absolute;
+  inline-size: 2px;
+  block-size: 2px;
+  border-radius: 999px;
+  background: var(--muted-2);
+  translate: -50% -50%;
+}
+.universe__mini-dot[data-core] {
+  inline-size: 5px;
+  block-size: 5px;
+  background: var(--ice);
+  box-shadow: 0 0 5px color-mix(in oklab, var(--ice) 70%, transparent);
+}
+.universe__mini-dot[data-active] {
+  background: var(--fg);
+  scale: 1.6;
+}
+
+/* --- nút zoom ----------------------------------------------------- */
+.universe__controls {
+  position: absolute;
+  inset-block-start: 0.6rem;
+  inset-inline-end: 0.6rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.2rem;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.universe__controls button {
+  display: grid;
+  place-items: center;
+  inline-size: 1.65rem;
+  block-size: 1.65rem;
+  border-radius: 999px;
+  color: var(--muted);
+  transition:
+    color 160ms var(--e-out),
+    background-color 160ms var(--e-out);
+}
+.universe__controls button:hover:not(:disabled) {
+  color: var(--fg);
+  background: var(--surface-2);
+}
+.universe__controls button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.universe__zoom {
+  padding-inline: 0.4rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--muted-2);
+}
+
+/* --- legend -------------------------------------------------------- */
+.universe__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  margin-top: 0.9rem;
+}
+.universe__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: var(--muted-2);
+}
+.universe__legend-dot {
+  inline-size: 7px;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+/* --- mark logo (§41–44) ------------------------------------------- */
+/* Logo luôn ở trong hộp vuông, canh giữa, và không bao giờ méo:
+   viewBox gốc của từng mark đã quyết định phần còn lại. */
+.logo {
+  flex: none;
+  line-height: 0;
+}
+.logo svg {
+  shape-rendering: geometricPrecision;
+}
+/* mark quá tối trên nền vũ trụ đã được vẽ bằng currentColor ở
+   components/logos/logo.tsx — ở đây chỉ cần cho nó màu chữ sáng */
+/* mark đen tuyệt đối (Vercel, Rust…) hạt trắng sẽ chói hơn hẳn node
+   xung quanh, phá thứ bậc thị giác. Hạ xuống gần màu chữ phụ. */
+.logo[data-inverse] {
+  color: color-mix(in oklab, var(--fg-2) 78%, var(--muted));
+}
+.universe__node[data-active] .logo[data-inverse],
+.universe__node:hover .logo[data-inverse],
+.universe__node:focus-visible .logo[data-inverse] {
+  color: var(--fg-2);
+}
+/* rê logo: nở nhẹ + nghiêng 1–2°, không xoay vòng (§42) */
+.universe__node:hover .logo,
+.universe__node:focus-visible .logo {
+  scale: 1.08;
+  rotate: 1.5deg;
+}
+/* --- nút lõi ở hero: bấm để mở vũ trụ ------------------------- */
+.hero__core {
+  cursor: pointer;
+  transition: scale 400ms var(--e-spring);
+}
+.hero__core:hover,
+.hero__core:focus-visible {
+  scale: 1.04;
+}
+.hero__core:focus-visible {
+  outline: none;
+}
+.hero__core:focus-visible .avatar__frame {
+  box-shadow:
+    0 0 0 2px color-mix(in oklab, var(--fg) 40%, transparent),
+    0 0 0 6px color-mix(in oklab, var(--ice) 22%, transparent);
+}
+.hero__core-hint {
+  position: absolute;
+  inset-block-end: -1.6rem;
+  inset-inline: 0;
+  z-index: 5;
+  justify-self: center;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  opacity: 0;
+  translate: 0 4px;
+  transition:
+    opacity 300ms var(--e-out),
+    translate 300ms var(--e-out);
+  pointer-events: none;
+}
+.hero__core:hover .hero__core-hint,
+.hero__core:focus-visible .hero__core-hint {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* ==================================================================
+   UNIVERSE OVERLAY — chế độ toàn màn hình
+   ================================================================== */
+.universe-overlay {
+  /* Không được phép trông chờ vào blur: máy không có GPU (hoặc trình
+     duyệt bỏ backdrop-filter) thì chữ trang phía sau lộ nguyên hình.
+     Nền gần như đặc là chốt chặn chắc; blur chỉ là lớp trang trí. */
+  background: color-mix(in oklab, var(--bg) 98%, transparent);
+  backdrop-filter: blur(22px) saturate(130%);
+  -webkit-backdrop-filter: blur(22px) saturate(130%);
+  animation: uni-overlay-in 420ms var(--e-out) both;
+}
+.universe-overlay__bg {
+  position: absolute;
+  inset: 0;
+  /* z-index: -1 sẽ kẹp lớp này XUỐNG DƯỚI nền của chính overlay và
+     vô hình; đặt z-index: 0 rồi nâng phần nội dung lên trên. */
+  z-index: 0;
+  background:
+    radial-gradient(80% 60% at 50% 0%, color-mix(in oklab, var(--iris) 14%, transparent), transparent 62%),
+    radial-gradient(60% 50% at 15% 90%, color-mix(in oklab, var(--ice) 10%, transparent), transparent 60%);
+}
+@keyframes uni-overlay-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* bản đồ trong overlay không bo viền kép — đã có nền riêng */
+.universe-overlay > *:not(.universe-overlay__bg) {
+  position: relative;
+  z-index: 1;
+}
+
+.universe-overlay .universe {
+  border-color: var(--line-2);
+  background: transparent;
+}
+
+/* ==================================================================
+   IDLE — lớp trang trí lùi lại sau ~7s không tương tác.
+   Chỉ chạm vào lớp decor; chữ và tương tác giữ nguyên 100%.
+   ================================================================== */
+.grain,
+.ambient__vignette,
+[data-ambient-layer] {
+  transition: opacity var(--t-slow) var(--e-out);
+}
+html[data-ambient="1"] .grain {
+  opacity: 0;
+}
+html[data-ambient="1"] .ambient__vignette {
+  opacity: 0.5;
+}
+html[data-ambient="1"] [data-ambient-layer] {
+  opacity: 0.35;
+}
+/* đang nghe nhạc thì giữ sân khấu sáng — nhạc là chủ đề của khoảnh khắc */
+html[data-ambient="1"][data-audio="playing"] .grain {
+  opacity: calc(var(--grain-opacity) * 0.6);
+}
+
+/* ==================================================================
+   AMBIENT — grain + vignette + spotlight con trỏ
+   ================================================================== */
+@utility grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 90;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  will-change: transform;
+  animation: grain-shift 6s steps(6) infinite;
+}
+
+@keyframes grain-shift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  20% {
+    transform: translate3d(-2%, 1.5%, 0);
+  }
+  40% {
+    transform: translate3d(1.5%, -1%, 0);
+  }
+  60% {
+    transform: translate3d(-1%, -2%, 0);
+  }
+  80% {
+    transform: translate3d(2%, 1%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Ánh sáng bám con trỏ, cập nhật bằng 2 biến CSS trên <html> */
+@utility cursor-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 800ms var(--e-out);
+  background: radial-gradient(
+    520px circle at var(--mx, 50%) var(--my, 30%),
+    color-mix(in oklab, var(--ice) 7%, transparent),
+    transparent 70%
+  );
+}
+
+html[data-pointer-in="true"] .cursor-glow {
+  opacity: 1;
+}
+
+/* Ẩn con trỏ hệ thống khi đã bật con trỏ tuỳ chỉnh */
+html.cursor-none,
+html.cursor-none * {
+  cursor: none !important;
+}
+
+@utility hairline-top {
+  position: relative;
+}
+@utility hairline-top-before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-2) 22%, var(--line-2) 78%, transparent);
+  opacity: 0;
+  transition: opacity var(--t-base) var(--e-out);
+}
+
+/* Mảng lưới kỹ thuật */
+@utility optical-grid {
+  background-image:
+    linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+@utility dot-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--grid) 1px, transparent 0);
+  background-size: 26px 26px;
+}
+
+/* Quét dọc rất chậm trên nền tối */
+@utility scanlines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.022) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+/* ==================================================================
+   SCROLLBAR
+   ================================================================== */
+@supports (scrollbar-width: thin) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-2) transparent;
+  }
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line-2);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ice);
+  background-clip: content-box;
+}
+
+/* ==================================================================
+   A11Y — tôn trọng lựa chọn của người dùng
+   ================================================================== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  transform: translateY(-160%);
+  transition: transform var(--t-base) var(--e-out);
+}
+.skip-link:focus-visible {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .js [data-reveal],
+  .js [data-reveal][data-shown="true"],
+  .word > i {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    -webkit-mask-size: 100% 100% !important;
+    mask-size: 100% 100% !important;
+    transition: none !important;
+    animation: none !important;
+  }
+  .grain {
+    animation: none !important;
+  }
+  .animate-iris {
+    animation: none !important;
+  }
+  /* Lớp thương hiệu: giữ nguyên hình dáng, chỉ bỏ chuyển động */
+  .avatar__halo,
+  .avatar__orbit,
+  .avatar__sheen,
+  .logo3d__float,
+  .logo3d__sheen {
+    animation: none !important;
+  }
+  .avatar__sheen,
+  .logo3d__sheen {
+    display: none !important;
+  }
+  .avatar__orbit {
+    opacity: 0.5;
+  }
+  .logo3d,
+  .logo3d__stage,
+  .logo3d__float {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Chỉ hiện con trỏ tùy chỉnh khi thiết bị thật sự có con trỏ chính xác */
+@media (hover: none), (pointer: coarse) {
+  .cursor-glow,
+  [data-custom-cursor] {
+    display: none !important;
+  }
+  /* không có con trỏ thì không có parallax */
+  .logo3d {
+    transform: none !important;
+  }
+}
